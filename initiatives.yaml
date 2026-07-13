@@ -1,0 +1,183 @@
+# =============================================================================
+# Initiative Pulse — Live initiative records (sample portfolio)
+# =============================================================================
+# Synthetic-but-realistic JKLM-flavored data. One record per initiative,
+# conforming to status-schema.yaml. Mix of RAG states, PDLC stages, and update
+# freshness so the dashboard's self-measuring metrics are meaningful.
+# "Today" for this sample = 2026-06-02.
+# =============================================================================
+
+- id: pay-001
+  name: Off-Cycle Payroll Self-Serve
+  mission_team: Payroll
+  pm_owner: Dana Whitfield
+  pdlc_stage: Build
+  rag: green
+  what_moved: >
+    Shipped the approval-rules engine behind a flag; 3 internal test companies
+    ran off-cycle runs end-to-end with no manual ops intervention.
+  blockers: []
+  next_milestone:
+    label: Internal beta with 10 design-partner companies
+    date: "2026-06-19"
+  decisions:
+    - decision: Cap self-serve off-cycle runs at 2/month for beta to limit risk
+      date: "2026-05-28"
+      by: Dana Whitfield + Risk
+  links:
+    spec: https://JKLM.example/specs/pay-001
+    jira: https://JKLM.example/jira/PAY-2231
+    slack: https://JKLM.example/slack/payroll-offcycle
+  updated_at: "2026-06-01"
+  confidence: confirmed
+
+- id: ben-002
+  name: Benefits Open Enrollment 2027 Readiness
+  mission_team: Benefits
+  pm_owner: Marcus Lee
+  pdlc_stage: Definition
+  rag: amber
+  what_moved: >
+    Carrier data-feed spec drafted; two of five carriers confirmed format.
+    Waiting on the remaining three before we can lock the integration scope.
+  blockers:
+    - issue: 3 carriers haven't confirmed EDI feed format
+      owner: Marcus Lee
+      since: "2026-05-20"
+  next_milestone:
+    label: Lock integration scope with all 5 carriers
+    date: "2026-06-16"
+  decisions:
+    - decision: Build a carrier-agnostic mapping layer instead of per-carrier code
+      date: "2026-05-22"
+      by: Benefits + Platform
+  links:
+    spec: https://JKLM.example/specs/ben-002
+    jira: https://JKLM.example/jira/BEN-1899
+  updated_at: "2026-05-30"
+  confidence: confirmed
+
+- id: cmp-003
+  name: Multi-State Tax Compliance Engine
+  mission_team: Compliance
+  pm_owner: Ademar Perez
+  pdlc_stage: QA
+  rag: red
+  what_moved: >
+    QA surfaced incorrect withholding calc for NY/NJ reciprocal agreements.
+    Launch at risk until the calc is fixed and re-validated against 2026 tables.
+  blockers:
+    - issue: Reciprocal-state withholding calc returns wrong values
+      owner: Ademar Perez
+      since: "2026-05-27"
+    - issue: Need updated 2026 state tax tables from data vendor
+      owner: Data Platform
+      since: "2026-05-29"
+  next_milestone:
+    label: Re-validate withholding across all 50 states
+    date: "2026-06-12"
+  decisions:
+    - decision: Hold launch until reciprocal-state calc passes full QA suite
+      date: "2026-05-29"
+      by: Ademar Perez + Compliance Lead
+  links:
+    spec: https://JKLM.example/specs/cmp-003
+    jira: https://astorpoint.atlassian.net/browse/CMP-4
+    slack: https://app.slack.com/client/T0BB5J5BKS5/C0BB5J5BKS5
+  updated_at: "2026-06-02"
+  confidence: confirmed
+
+- id: pay-004
+  name: Contractor Payments International (5 new countries)
+  mission_team: Payroll
+  pm_owner: Dana Whitfield
+  pdlc_stage: GTM
+  rag: green
+  what_moved: >
+    Feature complete and QA-passed for UK, Canada, Mexico, India, Philippines.
+    Drafting GTM brief and CS enablement docs ahead of public launch.
+  blockers: []
+  next_milestone:
+    label: Public launch + CS enablement live
+    date: "2026-06-10"
+  decisions:
+    - decision: Launch all 5 countries together rather than phased rollout
+      date: "2026-05-25"
+      by: Dana Whitfield
+  links:
+    spec: https://JKLM.example/specs/pay-004
+    jira: https://JKLM.example/jira/PAY-2102
+  updated_at: "2026-05-31"
+  confidence: confirmed
+
+- id: plt-005
+  name: Unified Notifications Platform
+  mission_team: Platform
+  pm_owner: Sam Ortiz
+  pdlc_stage: Discovery
+  rag: amber
+  what_moved: >
+    Audited 14 existing notification paths across payroll/benefits; proposing a
+    single service. Scope still fuzzy — needs a definition cycle before commit.
+  blockers:
+    - issue: No agreement on whether to migrate legacy email paths in v1
+      owner: Sam Ortiz
+      since: "2026-05-18"
+  next_milestone:
+    label: Reach scope decision on legacy migration
+    date: "2026-06-20"
+  decisions: []
+  links:
+    jira: https://JKLM.example/jira/PLT-980
+  updated_at: "2026-05-21"   # NOTE: stale (>7 days) — drags down freshness metric
+  confidence: needs_human_confirm   # AI inferred status from a thin Slack thread
+
+- id: ben-006
+  name: HSA/FSA Contribution Limit Automation
+  mission_team: Benefits
+  pm_owner: Marcus Lee
+  pdlc_stage: Launched
+  rag: green
+  what_moved: >
+    Launched to 100% of eligible companies. Auto-adjusts contributions to 2026
+    IRS limits; zero support tickets in first week post-launch.
+  blockers: []
+  next_milestone:
+    label: 30-day post-launch health review
+    date: "2026-06-27"
+  decisions:
+    - decision: Auto-cap over-contributions rather than block the paycheck
+      date: "2026-05-15"
+      by: Benefits + Compliance
+  links:
+    spec: https://JKLM.example/specs/ben-006
+    jira: https://JKLM.example/jira/BEN-1700
+  updated_at: "2026-05-29"
+  confidence: confirmed
+
+- id: cmp-007
+  name: I-9 / E-Verify Workflow Redesign
+  mission_team: Compliance
+  pm_owner: Ademar Perez
+  pdlc_stage: Build
+  rag: amber
+  what_moved: >
+    Rebuilt document-upload flow; cut steps from 9 to 5. E-Verify API
+    integration in progress but vendor sandbox has been flaky this week.
+  blockers:
+    - issue: E-Verify vendor sandbox intermittently down, slowing integration
+      owner: Sam Ortiz
+      since: "2026-05-26"
+  next_milestone:
+    label: E-Verify integration code-complete
+    date: "2026-06-18"
+  decisions:
+    - decision: Keep manual fallback path for E-Verify outages at launch
+      date: "2026-05-24"
+      by: Ademar Perez
+  links:
+    spec: https://JKLM.example/specs/cmp-007
+    jira: https://JKLM.example/jira/CMP-1521
+    slack: https://JKLM.example/slack/compliance-i9
+  updated_at: "2026-06-01"
+  confidence: confirmed

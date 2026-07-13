@@ -1,0 +1,176 @@
+# =============================================================================
+# Initiative Pulse — Status Schema v1.0
+# =============================================================================
+# The single structured record for one initiative. This IS the source of truth.
+# Every downstream artifact (leadership rollup, dashboard, later: QA + GTM)
+# generates FROM this record. A PM fills it once per week in ~2 minutes
+# (AI pre-fills it from Jira/Slack); nothing else gets re-keyed by hand.
+#
+# Design principles:
+#   1. Structured, not prose — every field is queryable, not buried in a doc.
+#   2. Lives where work happens — one file/record per initiative, version-able.
+#   3. Self-instrumenting — freshness & coverage are computed FROM the data,
+#      so the system measures its own adoption with no manual audit.
+#
+# WHERE THIS LIVES IN PRODUCTION: this schema IS a Notion database — one row per
+# initiative, in the tool JKLM already uses. The field types below map 1:1
+# to Notion property types, so there's no new place to log in:
+#   id->Text(unique)  name->Title  mission_team->Select  pm_owner->Person
+#   pdlc_stage->Select  rag->Select  what_moved->Text  blockers->Text/related
+#   next_milestone.date->Date  decisions->Text  links->URL  updated_at->Last edited
+#   confidence->Select.  The YAML in this repo is the portable, demo-sized export
+# of that Notion DB. Claude writes records into it via the Notion connector;
+# the dashboard and rollup read FROM it.
+#
+# A machine-checkable JSON Schema is included at the bottom for validation.
+# =============================================================================
+
+# ----------------------------- FIELD DEFINITIONS ----------------------------
+fields:
+
+  id:
+    type: string
+    required: true
+    description: Stable slug, e.g. "pay-001". Never changes; links artifacts together.
+
+  name:
+    type: string
+    required: true
+    description: Human-readable initiative name.
+
+  mission_team:
+    type: string
+    required: true
+    description: Owning mission team (e.g. Payroll, Benefits, Compliance, Platform).
+
+  pm_owner:
+    type: string
+    required: true
+    description: Accountable PM. One name, not a committee.
+
+  pdlc_stage:
+    type: enum
+    required: true
+    # Mirrors the existing PDLC Jira statuses so this layers on top of process
+    # the org already adopted — no new lifecycle to learn.
+    allowed: [Discovery, Definition, Build, QA, GTM, Launched, Paused]
+    description: Current PDLC stage. Maps 1:1 to the org's Jira statuses.
+
+  rag:
+    type: enum
+    required: true
+    allowed: [green, amber, red]
+    description: >
+      Overall health. green = on track; amber = at risk, has a plan;
+      red = blocked or slipping, needs leadership attention.
+
+  what_moved:
+    type: string
+    required: true
+    description: What actually changed since last update. 1-3 sentences. The signal.
+
+  blockers:
+    type: list
+    required: false
+    description: Open blockers. Empty list is valid and meaningful (= unblocked).
+    item_shape:
+      issue:  { type: string, required: true,  description: What is blocked }
+      owner:  { type: string, required: true,  description: Who owns unblocking it }
+      since:  { type: date,   required: false, description: ISO date the blocker opened }
+
+  next_milestone:
+    type: object
+    required: true
+    shape:
+      label: { type: string, required: true,  description: The next concrete milestone }
+      date:  { type: date,   required: true,  description: ISO target date (YYYY-MM-DD) }
+
+  decisions:
+    type: list
+    required: false
+    description: >
+      Decisions logged here, in the record — so they stop living in
+      "four or five conversations." This is the fix for the socialization gap.
+    item_shape:
+      decision: { type: string, required: true,  description: What was decided }
+      date:     { type: date,   required: true,  description: ISO date decided }
+      by:       { type: string, required: false, description: Who decided / approved }
+
+  links:
+    type: object
+    required: false
+    description: Pointers to the canonical artifacts so nothing is re-explained.
+    shape:
+      spec:   { type: url, description: Product spec }
+      jira:   { type: url, description: Jira epic/board }
+      slack:  { type: url, description: Working channel }
+
+  updated_at:
+    type: date
+    required: true
+    description: >
+      ISO date this record was last updated. Drives the FRESHNESS metric.
+      Set automatically when the AI extraction step writes the record.
+
+  confidence:
+    type: enum
+    required: true
+    allowed: [confirmed, needs_human_confirm]
+    description: >
+      Set by the AI extraction step. "needs_human_confirm" flags records the
+      model inferred from thin/ambiguous input so a PM eyeballs them before
+      they reach leadership. This is the guardrail against hallucinated status.
+
+# --------------------------- MACHINE-VALIDATION ------------------------------
+# JSON Schema (draft 2020-12). Used by validate.py to reject malformed records
+# before they ever reach the dashboard or the leadership rollup.
+json_schema:
+  $schema: "https://json-schema.org/draft/2020-12/schema"
+  title: InitiativePulseRecord
+  type: object
+  required: [id, name, mission_team, pm_owner, pdlc_stage, rag, what_moved, next_milestone, updated_at, confidence]
+  additionalProperties: false
+  properties:
+    id:            { type: string, pattern: "^[a-z]+-[0-9]{3}$" }
+    name:          { type: string, minLength: 3 }
+    mission_team:  { type: string }
+    pm_owner:      { type: string }
+    pdlc_stage:    { type: string, enum: [Discovery, Definition, Build, QA, GTM, Launched, Paused] }
+    rag:           { type: string, enum: [green, amber, red] }
+    what_moved:    { type: string, minLength: 5 }
+    blockers:
+      type: array
+      items:
+        type: object
+        required: [issue, owner]
+        additionalProperties: false
+        properties:
+          issue: { type: string }
+          owner: { type: string }
+          since: { type: string, format: date }
+    next_milestone:
+      type: object
+      required: [label, date]
+      additionalProperties: false
+      properties:
+        label: { type: string }
+        date:  { type: string, format: date }
+    decisions:
+      type: array
+      items:
+        type: object
+        required: [decision, date]
+        additionalProperties: false
+        properties:
+          decision: { type: string }
+          date:     { type: string, format: date }
+          by:       { type: string }
+    links:
+      type: object
+      additionalProperties: false
+      properties:
+        spec:  { type: string }
+        jira:  { type: string }
+        slack: { type: string }
+    updated_at:    { type: string, format: date }
+    confidence:    { type: string, enum: [confirmed, needs_human_confirm] }

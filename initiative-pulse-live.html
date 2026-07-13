@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Initiative Pulse — Live from Notion</title>
+<style>
+  :root{
+    color-scheme: light;
+    --bg:#f4f5f9; --card:#ffffff; --surface:#ffffff; --ink:#16163f; --muted:#646b86;
+    --line:#e3e5ee; --jw:#0000f0; --jw-soft:#ebebff; --jw-navy:#15246d;
+    --green:#1a9c5b; --amber:#e08a00; --red:#d23b3b;
+    --green-bg:#e7f6ee; --amber-bg:#fdf2dd; --red-bg:#fbe7e7;
+    --ms-bg:#f7f9fb;
+    --shadow:0 1px 3px rgba(20,40,60,.08),0 4px 14px rgba(20,40,60,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+       background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:28px 24px 60px}
+
+  header.top{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:6px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .logo{width:40px;height:40px;border-radius:9px;display:block}
+  h1{font-size:22px;margin:0;letter-spacing:-.3px}
+  .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .asof{font-size:12.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);
+        padding:7px 12px;border-radius:20px}
+  .asof b{color:var(--ink)}
+  .srcbadge{font-size:11.5px;font-weight:600;color:var(--jw);border:1px solid var(--jw);
+            background:var(--jw-soft);padding:7px 12px;border-radius:20px;display:flex;align-items:center;gap:6px}
+  .pulse{width:8px;height:8px;border-radius:50%;background:var(--green);
+         animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin:22px 0 8px}
+  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;box-shadow:var(--shadow)}
+  .kpi .n{font-size:28px;font-weight:750;letter-spacing:-.5px;line-height:1}
+  .kpi .n.jump{cursor:pointer;color:var(--red);text-decoration:underline;text-decoration-thickness:2px;
+               text-underline-offset:4px}
+  .kpi .n.jump.confirm{color:#6a4bbd}
+  @keyframes flashcard{0%,60%{box-shadow:0 0 0 3px var(--flash,var(--red)),var(--shadow)}100%{box-shadow:var(--shadow)}}
+  .card.flash{animation:flashcard 1.6s ease-out}
+  .kpi .l{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.35}
+  .kpi .bar{height:5px;border-radius:3px;background:var(--line);margin-top:10px;overflow:hidden}
+  .kpi .bar > i{display:block;height:100%;border-radius:3px;background:var(--jw)}
+  .rag-counts{display:flex;gap:14px;margin-top:8px}
+  .rag-counts span{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)}
+
+  /* controls */
+  .controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:24px 0 14px}
+  .controls .label{font-size:12px;color:var(--muted);margin-right:2px}
+  .chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:12.5px;
+        padding:6px 12px;border-radius:18px;cursor:pointer;transition:.12s}
+  .chip:hover{border-color:#c4ccd6}
+  .chip.active{background:var(--jw);border-color:var(--jw);color:#fff}
+  .chip.active[data-v="green"]{background:var(--green);border-color:var(--green)}
+  .chip.active[data-v="amber"]{background:var(--amber);border-color:var(--amber)}
+  .chip.active[data-v="red"]{background:var(--red);border-color:var(--red)}
+  .spacer{flex:1}
+
+  /* board */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:16px 17px;
+        box-shadow:var(--shadow);border-left:5px solid var(--line);position:relative}
+  .card.green{border-left-color:var(--green)} .card.amber{border-left-color:var(--amber)} .card.red{border-left-color:var(--red)}
+  .card h3{margin:0 0 2px;font-size:15.5px;letter-spacing:-.2px;padding-right:60px}
+  .meta{font-size:12px;color:var(--muted);margin-bottom:11px}
+  .badges{position:absolute;top:15px;right:15px;display:flex;gap:6px;align-items:center}
+  .stage{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+         color:var(--jw);background:var(--jw-soft);padding:3px 8px;border-radius:6px}
+  .ragdot{width:13px;height:13px;border-radius:50%}
+  .ragdot.green{background:var(--green)} .ragdot.amber{background:var(--amber)} .ragdot.red{background:var(--red)}
+  .moved{font-size:13.5px;line-height:1.45;margin:0 0 12px}
+  .row{font-size:12.5px;margin:7px 0;line-height:1.4}
+  .row .k{color:var(--muted);font-weight:600;margin-right:5px}
+  .blocker{background:var(--red-bg);border-radius:7px;padding:7px 9px;margin:6px 0;font-size:12.5px;line-height:1.4}
+  .blocker .owner{color:var(--muted)}
+  .ms{display:flex;align-items:center;gap:7px;font-size:12.5px;background:var(--ms-bg);border:1px solid var(--line);
+      border-radius:7px;padding:7px 9px;margin-top:6px}
+  .ms .date{margin-left:auto;font-weight:700}
+  .foot{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);
+        font-size:11.5px;color:var(--muted);flex-wrap:wrap}
+  .flag{font-size:11px;font-weight:700;padding:3px 7px;border-radius:5px}
+  .flag.stale{background:var(--amber-bg);color:#9a6200}
+  .flag.confirm{background:#eee9fb;color:#6a4bbd}
+  .links a{color:var(--jw);text-decoration:none;margin-left:8px;font-weight:600}
+  .links a:hover{text-decoration:underline}
+  .note{font-size:12px;color:var(--muted);margin-top:26px;text-align:center;line-height:1.5}
+  .note b{color:var(--ink)}
+
+  /* Loading state */
+  #status{display:flex;flex-direction:column;align-items:center;justify-content:center;
+          padding:80px 24px;text-align:center;gap:18px}
+  .spinner{width:40px;height:40px;border:3px solid var(--line);border-top-color:var(--jw);
+           border-radius:50%;animation:spin .8s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #status p{color:var(--muted);font-size:14px;margin:0}
+  .error-box{background:#fbe7e7;border:1px solid #f5b5b5;border-radius:10px;padding:18px 22px;
+             color:#a01010;font-size:13.5px;max-width:480px;margin:0 auto;text-align:left}
+  .error-box b{display:block;margin-bottom:6px;font-size:15px}
+  .retry-btn{margin-top:14px;padding:8px 18px;background:var(--jw);color:#fff;border:none;
+             border-radius:8px;cursor:pointer;font-size:13px;font-weight:600}
+  .retry-btn:hover{opacity:.85}
+
+  @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="brand">
+      <img class="logo" alt="JKLM" src="/logo.webp">
+      <div>
+        <h1>Initiative Pulse</h1>
+        <div class="sub">Live from Notion — refreshes on every load. No manual updates needed.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <span class="srcbadge"><span class="pulse"></span> Live · Notion</span>
+      <div class="asof">As of <b id="asof">—</b></div>
+    </div>
+  </header>
+
+  <div id="status">
+    <div class="spinner"></div>
+    <p id="status-msg">Fetching from Notion…</p>
+  </div>
+
+  <section class="kpis" id="kpis" style="display:none"></section>
+
+  <div class="controls" id="controls" style="display:none">
+    <span class="label">RAG</span>
+    <button class="chip active" data-f="rag" data-v="all">All</button>
+    <button class="chip" data-f="rag" data-v="red">Red</button>
+    <button class="chip" data-f="rag" data-v="amber">Amber</button>
+    <button class="chip" data-f="rag" data-v="green">Green</button>
+    <span class="spacer"></span>
+    <span class="label">Team</span>
+    <button class="chip active" data-f="team" data-v="all">All teams</button>
+    <button class="chip" data-f="team" data-v="Payroll">Payroll</button>
+    <button class="chip" data-f="team" data-v="Benefits">Benefits</button>
+    <button class="chip" data-f="team" data-v="Compliance">Compliance</button>
+    <button class="chip" data-f="team" data-v="Platform">Platform</button>
+  </div>
+
+  <section class="grid" id="grid" style="display:none"></section>
+  <p id="grid-empty" hidden style="color:var(--muted);text-align:center;padding:20px 0">No initiatives match this filter.</p>
+
+  <p class="note" id="note" style="display:none">
+    Every metric above is read live from the <b>Initiative Pulse Notion database</b> — the single structured record.<br>
+    Claude writes this source of truth weekly (~2 min via Jira + Slack connectors). Leadership gets self-serve visibility anytime.
+  </p>
+
+</div>
+<script>
+// ── helpers ──────────────────────────────────────────────────────────────────
+const DAY = 86400000;
+const RAG_ORDER = {red:0, amber:1, green:2};  // Change 5: hoisted constant
+let TODAY = null;
+
+function daysAgo(d) {
+  if (!d || !TODAY) return 0;
+  return Math.round((TODAY - new Date(d + "T00:00:00")) / DAY);
+}
+function fmt(d) {
+  if (!d) return "TBD";
+  return new Date(d + "T00:00:00").toLocaleDateString("en-US", {month:"short", day:"numeric"});
+}
+function isStale(r) { return daysAgo(r.updated_at) > 7; }
+
+// ── Notion data load ─────────────────────────────────────────────────────────
+let DATA = [];
+const filters = {rag:"all", team:"all", confidence:"all"};
+
+async function loadFromNotion() {
+  setStatus("loading", "Fetching from Notion…");
+  try {
+    const response = await fetch("/.netlify/functions/notion-proxy");
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || `HTTP ${response.status}`);
+    }
+    const { records } = await response.json();
+    if (!records || !records.length) throw new Error("No initiatives found in Notion.");
+
+    DATA = records;
+    TODAY = new Date();
+    document.getElementById("asof").textContent =
+      TODAY.toLocaleDateString("en-US", {weekday:"long", month:"long", day:"numeric", year:"numeric"});
+
+    setStatus("done");
+    renderKpis();
+    initGrid();  // Change 3: render cards once
+  } catch (err) {
+    setStatus("error", err.message || "Unknown error");
+  }
+}
+
+// ── status / loading ─────────────────────────────────────────────────────────
+function setStatus(state, msg) {
+  const el = document.getElementById("status");
+  const show = ids => ids.forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.style.display = "";
+  });
+  const hide = ids => ids.forEach(id => {
+    const e = document.getElementById(id);
+    if (e) e.style.display = "none";
+  });
+
+  if (state === "loading") {
+    el.style.display = "flex";
+    el.innerHTML = `<div class="spinner"></div><p>${msg}</p>`;
+    hide(["kpis","controls","grid","note"]);
+  } else if (state === "done") {
+    el.style.display = "none";
+    show(["kpis","controls","grid","note"]);
+  } else if (state === "error") {
+    el.style.display = "flex";
+    el.innerHTML = `
+      <div class="error-box">
+        <b>Couldn't load from Notion</b>
+        ${msg}
+        <br><button class="retry-btn" onclick="loadFromNotion()">Try again</button>
+      </div>`;
+    hide(["kpis","controls","grid","note"]);
+  }
+}
+
+// ── KPI strip ─────────────────────────────────────────────────────────────────
+function metrics() {
+  const n = DATA.length;
+  if (!n) return {n:0,fresh:0,needsConfirm:0,complete:0,rag:{green:0,amber:0,red:0},freshPct:0,completePct:0};
+  // Change 4: single reduce pass instead of 3 filters + 1 forEach
+  const acc = DATA.reduce((a, r) => {
+    if (!isStale(r)) a.fresh++;
+    if (r.confidence === "needs_human_confirm") a.needsConfirm++;
+    if (r.what_moved && r.next_milestone && r.next_milestone.date && r.rag) a.complete++;
+    a.rag[r.rag] = (a.rag[r.rag] || 0) + 1;
+    return a;
+  }, {fresh:0, needsConfirm:0, complete:0, rag:{green:0,amber:0,red:0}});
+  return {n, ...acc,
+          freshPct: Math.round(acc.fresh/n*100),
+          completePct: Math.round(acc.complete/n*100)};
+}
+
+function renderKpis() {
+  const m = metrics();
+  document.getElementById("kpis").innerHTML = `
+    <div class="kpi"><div class="n">${m.n}</div><div class="l">Active initiatives</div></div>
+    <div class="kpi"><div class="n">${m.freshPct}%</div>
+      <div class="l">Updated in last 7 days (${m.fresh}/${m.n})</div>
+      <div class="bar"><i style="width:${m.freshPct}%"></i></div></div>
+    <div class="kpi"><div class="n">${m.completePct}%</div>
+      <div class="l">Complete structured records (${m.complete}/${m.n})</div>
+      <div class="bar"><i style="width:${m.completePct}%"></i></div></div>
+    <div class="kpi">
+      <div class="n${m.rag.red ? " jump" : ""}" id="jump-red">${m.rag.red}</div>
+      <div class="l">Need leadership attention</div>
+      <div class="rag-counts">
+        <span><i class="dot green"></i>${m.rag.green || 0}</span>
+        <span><i class="dot amber"></i>${m.rag.amber || 0}</span>
+        <span><i class="dot red"></i>${m.rag.red || 0}</span>
+      </div>
+    </div>
+    <div class="kpi">
+      <div class="n${m.needsConfirm ? " jump confirm" : ""}" id="jump-confirm">${m.needsConfirm}</div>
+      <div class="l">AI-inferred, awaiting human confirm</div>
+    </div>`;
+}
+
+// ── initiative grid ───────────────────────────────────────────────────────────
+// Change 3: render all cards once, sorted by RAG; filtering just toggles hidden
+function initGrid() {
+  const rows = DATA.slice().sort((a,b) => RAG_ORDER[a.rag] - RAG_ORDER[b.rag]);  // Change 5: uses hoisted const
+
+  document.getElementById("grid").innerHTML = rows.map(r => {
+    const blockersHtml = (r.blockers || []).map(b =>
+      `<div class="blocker">🚧 ${b.issue}${b.owner ? ` <span class="owner">— ${b.owner}${b.since ? `, open since ${b.since}` : ""}</span>` : ""}</div>`
+    ).join("");
+
+    const linkItems = [];
+    if (r.links.spec)  linkItems.push(`<a href="${r.links.spec}" target="_blank">spec</a>`);
+    if (r.links.jira)  linkItems.push(`<a href="${r.links.jira}" target="_blank">jira</a>`);
+    if (r.links.slack) linkItems.push(`<a href="${r.links.slack}" target="_blank">slack</a>`);
+    if (r.notion_url)  linkItems.push(`<a href="${r.notion_url}" target="_blank">notion ↗</a>`);
+
+    const flags =
+      (isStale(r) ? `<span class="flag stale">⏱ stale · ${daysAgo(r.updated_at)}d</span>` : "") +
+      (r.confidence === "needs_human_confirm" ? `<span class="flag confirm">⚑ needs confirm</span>` : "");
+
+    return `<div class="card ${r.rag}" data-rag="${r.rag}" data-team="${r.mission_team}" data-confidence="${r.confidence}">
+      <div class="badges">
+        <span class="stage">${r.pdlc_stage}</span>
+        <span class="ragdot ${r.rag}"></span>
+      </div>
+      <h3>${r.name}</h3>
+      <div class="meta">${r.mission_team} · ${r.pm_owner}</div>
+      <p class="moved">${r.what_moved}</p>
+      ${blockersHtml}
+      <div class="ms">🎯 ${r.next_milestone.label || "—"}
+        <span class="date">${fmt(r.next_milestone.date)}</span>
+      </div>
+      <div class="foot">
+        Updated ${fmt(r.updated_at)} ${flags}
+        <span class="spacer"></span>
+        <span class="links">${linkItems.join("")}</span>
+      </div>
+    </div>`;
+  }).join("");
+
+  filterGrid();
+}
+
+function filterGrid() {
+  const cards = document.querySelectorAll('#grid .card');
+  let visible = 0;
+  cards.forEach(c => {
+    const show = (filters.rag === "all"        || c.dataset.rag        === filters.rag) &&
+                 (filters.team === "all"       || c.dataset.team       === filters.team) &&
+                 (filters.confidence === "all" || c.dataset.confidence === filters.confidence);
+    c.hidden = !show;
+    if (show) visible++;
+  });
+  document.getElementById("grid-empty").hidden = visible > 0;
+}
+
+// ── filter chips ──────────────────────────────────────────────────────────────
+function setRagFilter(v) {
+  filters.rag = v;
+  document.querySelectorAll('.chip[data-f="rag"]').forEach(c => c.classList.toggle("active", c.dataset.v === v));
+}
+function setTeamFilter(v) {
+  filters.team = v;
+  document.querySelectorAll('.chip[data-f="team"]').forEach(c => c.classList.toggle("active", c.dataset.v === v));
+}
+function setConfidenceFilter(v) {
+  filters.confidence = v;
+}
+
+document.getElementById("kpis").addEventListener("click", e => {
+  if (e.target.closest("#jump-red") && DATA.some(r => r.rag === "red")) {
+    setRagFilter("red"); filterGrid();
+    const first = document.querySelector('#grid .card[data-rag="red"]:not([hidden])');
+    if (first) { first.scrollIntoView({behavior:"smooth",block:"center"}); first.style.setProperty("--flash","var(--red)"); first.classList.add("flash"); setTimeout(()=>first.classList.remove("flash"),1700); }
+  } else if (e.target.closest("#jump-confirm") && DATA.some(r => r.confidence === "needs_human_confirm")) {
+    setRagFilter("all"); setTeamFilter("all"); setConfidenceFilter("needs_human_confirm"); filterGrid();
+    const first = document.querySelector('#grid .card[data-confidence="needs_human_confirm"]:not([hidden])');
+    if (first) { first.scrollIntoView({behavior:"smooth",block:"center"}); first.style.setProperty("--flash","#6a4bbd"); first.classList.add("flash"); setTimeout(()=>first.classList.remove("flash"),1700); }
+  }
+});
+
+document.getElementById("controls").addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  filters[b.dataset.f] = b.dataset.v;
+  setConfidenceFilter("all");
+  document.querySelectorAll(`.chip[data-f="${b.dataset.f}"]`).forEach(c => c.classList.remove("active"));
+  b.classList.add("active");
+  filterGrid();
+});
+
+// ── boot ──────────────────────────────────────────────────────────────────────
+loadFromNotion();
+</script>
+</body>
+</html>
