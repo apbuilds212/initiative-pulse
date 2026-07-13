@@ -82,7 +82,7 @@ treat as provisional.
 - **Multi-State Tax Compliance Engine** (Compliance · QA) — 🔴
   Reciprocal-state (NY/NJ) withholding calc is wrong; launch held until it passes
   full QA. Also awaiting 2026 tax tables (owner: Data Platform, open 4 days).
-  Owner: Ademar Perez. **Next: re-validate all 50 states — June 12.**
+  Owner: Abel Pena. **Next: re-validate all 50 states — June 12.**
 - **Benefits Open Enrollment 2027 Readiness** (Benefits · Definition) — 🟡
   3 of 5 carriers haven't confirmed EDI feed format (open 13 days, owner: Marcus Lee).
   **Next: lock integration scope — June 16.**

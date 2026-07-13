@@ -110,12 +110,12 @@ record. Below is the kind of raw payload those connectors return.
   values — failing 6 of the 50-state suite. Blocking sign-off."
 
 [Slack · #initiative-pulse-demo thread, 2026-05-29 → 06-02]
-  @ademar: agreed on the call — we hold the launch until the reciprocal calc passes
+  @abel: agreed on the call — we hold the launch until the reciprocal calc passes
           full QA. not shipping a wrong withholding number.
-  @ademar: also still waiting on data platform for the 2026 state tax tables, can't
+  @abel: also still waiting on data platform for the 2026 state tax tables, can't
           fully revalidate without them.
   @dataplatform-bot: tables ETA pushed to next week.
-  @ademar: targeting full 50-state re-validation by 6/12.
+  @abel: targeting full 50-state re-validation by 6/12.
 ```
 
 **Output (schema-valid — written to the Notion DB via the connector):**
@@ -124,7 +124,7 @@ record. Below is the kind of raw payload those connectors return.
 id: cmp-003
 name: Multi-State Tax Compliance Engine
 mission_team: Compliance
-pm_owner: Ademar Perez                      # from Slack (Jira issue is unassigned)
+pm_owner: Abel Pena                      # from Slack (Jira issue is unassigned)
 pdlc_stage: QA                              # from the Jira description ("current focus: QA validation"); Jira status is "In Progress"
 rag: red
 what_moved: >
@@ -132,7 +132,7 @@ what_moved: >
   states); launch held until it passes. Still awaiting 2026 tax tables (ETA slipped).
 blockers:
   - issue: Reciprocal-state (NY/NJ) withholding calc returns wrong values
-    owner: Ademar Perez
+    owner: Abel Pena
     since: "2026-05-27"
   - issue: Awaiting updated 2026 state tax tables
     owner: Data Platform
@@ -143,7 +143,7 @@ next_milestone:
 decisions:
   - decision: Hold launch until reciprocal-state calc passes full QA
     date: "2026-05-29"
-    by: Ademar Perez
+    by: Abel Pena
 links:
   jira: https://astorpoint.atlassian.net/browse/CMP-4
   slack: https://astorpoint.slack.com/archives/C0BB5J5BKS5
@@ -171,7 +171,7 @@ paragraph (or there's no connector for a given source), the same prompt handles 
 
 ```
 multi state tax thing — qa found the ny/nj reciprocal withholding is calculating
-wrong, also still waiting on data platform for the 2026 tax tables. ademar owns it.
+wrong, also still waiting on data platform for the 2026 tax tables. abel owns it.
 we agreed last fri to hold the launch til it passes full qa. trying to revalidate
 all 50 states by ~6/12. jira CMP-4
 ```
@@ -182,7 +182,7 @@ all 50 states by ~6/12. jira CMP-4
 id: cmp-003
 name: Multi-State Tax Compliance Engine
 mission_team: Compliance
-pm_owner: Ademar Perez
+pm_owner: Abel Pena
 pdlc_stage: QA
 rag: red
 what_moved: >
@@ -190,7 +190,7 @@ what_moved: >
   launch is on hold. Awaiting 2026 state tax tables from data platform.
 blockers:
   - issue: Reciprocal-state (NY/NJ) withholding calc returns wrong values
-    owner: Ademar Perez
+    owner: Abel Pena
     since: "2026-05-27"
   - issue: Awaiting updated 2026 state tax tables
     owner: Data Platform
@@ -200,12 +200,12 @@ next_milestone:
 decisions:
   - decision: Hold launch until reciprocal-state calc passes full QA
     date: "2026-05-29"
-    by: Ademar Perez
+    by: Abel Pena
 links:
   jira: https://astorpoint.atlassian.net/browse/CMP-4
 updated_at: "2026-06-02"
 confidence: confirmed
-REVIEW: inferred pm_owner full name ("ademar" → "Ademar Perez"); inferred decision date from "last fri".
+REVIEW: inferred pm_owner full name ("abel" → "Abel Pena"); inferred decision date from "last fri".
 ```
 
 Note the model surfaced its two inferences in the REVIEW line instead of burying

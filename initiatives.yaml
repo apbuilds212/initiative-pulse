@@ -60,7 +60,7 @@
 - id: cmp-003
   name: Multi-State Tax Compliance Engine
   mission_team: Compliance
-  pm_owner: Ademar Perez
+  pm_owner: Abel Pena
   pdlc_stage: QA
   rag: red
   what_moved: >
@@ -68,7 +68,7 @@
     Launch at risk until the calc is fixed and re-validated against 2026 tables.
   blockers:
     - issue: Reciprocal-state withholding calc returns wrong values
-      owner: Ademar Perez
+      owner: Abel Pena
       since: "2026-05-27"
     - issue: Need updated 2026 state tax tables from data vendor
       owner: Data Platform
@@ -79,7 +79,7 @@
   decisions:
     - decision: Hold launch until reciprocal-state calc passes full QA suite
       date: "2026-05-29"
-      by: Ademar Perez + Compliance Lead
+      by: Abel Pena + Compliance Lead
   links:
     spec: https://JKLM.example/specs/cmp-003
     jira: https://astorpoint.atlassian.net/browse/CMP-4
@@ -158,7 +158,7 @@
 - id: cmp-007
   name: I-9 / E-Verify Workflow Redesign
   mission_team: Compliance
-  pm_owner: Ademar Perez
+  pm_owner: Abel Pena
   pdlc_stage: Build
   rag: amber
   what_moved: >
@@ -174,7 +174,7 @@
   decisions:
     - decision: Keep manual fallback path for E-Verify outages at launch
       date: "2026-05-24"
-      by: Ademar Perez
+      by: Abel Pena
   links:
     spec: https://JKLM.example/specs/cmp-007
     jira: https://JKLM.example/jira/CMP-1521

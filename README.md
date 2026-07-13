@@ -115,4 +115,4 @@ generation → GTM briefs**, each generated from the record instead of rebuilt b
 hand. One source of truth, many artifacts, zero re-keying.
 
 ---
-*Built by Ademar Perez for the JKLM Product Operations Manager assessment.*
+*Built by Abel Pena for the JKLM Product Operations Manager assessment.*
